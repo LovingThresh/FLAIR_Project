@@ -51,7 +51,7 @@ class SMP_Unet_meta(BaseModel):
                  ):
         super(SMP_Unet_meta, self).__init__()
 
-        self.seg_model = smp.create_model(arch="unet", encoder_name="resnet34", classes=n_classes,
+        self.seg_model = smp.create_model(arch="unet", encoder_name="resnet50", classes=n_classes,
                                           in_channels=n_channels)
         self.use_metadata = use_metadata
         if use_metadata:

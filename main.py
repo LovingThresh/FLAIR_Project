@@ -7,7 +7,6 @@
 
 from typing import List
 
-
 from torch.optim import SGD
 from dataset_builder import *
 from model import SMP_Unet_meta
@@ -15,7 +14,6 @@ from torchmetrics import JaccardIndex, ConfusionMatrix
 from mmengine.runner import Runner
 from mmengine.logging import MMLogger
 from mmengine.evaluator import BaseMetric
-
 
 logger = MMLogger.get_instance('mmseg', log_level='INFO')
 
@@ -112,6 +110,8 @@ runner = Runner(
     visualizer=dict(type='Visualizer', vis_backends=[dict(type='TensorboardVisBackend', save_dir='temp_dir'),
                                                      dict(type='WandbVisBackend', init_kwargs=
                                                      dict(project='FLAIR_Project', notes=None,
-                                                          tags=None, group='Segmentation'))])
+                                                          tags=None, group='Segmentation'))]),
+    default_hooks = dict(checkpoint=dict(type='CheckpointHook', save_best='mean_iou', rule='greater',
+                                         interval=1, max_keep_ckpts=5))
 )
 runner.train()
