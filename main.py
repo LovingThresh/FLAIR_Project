@@ -74,6 +74,21 @@ train_dataloader, val_dataloader, predict_dataloader = \
 
 model = SMP_Unet_meta(n_channels=5, n_classes=13, use_metadata=use_metadata)
 
+param_scheduler = [
+    # 在 [0, 100) 迭代时使用线性学习率
+    dict(type='LinearLR',
+         start_factor=0.001,
+         by_epoch=True,
+         begin=0,
+         end=10),
+    # 在 [100, 900) 迭代时使用余弦学习率
+    dict(type='CosineAnnealingLR',
+         T_max=90,
+         by_epoch=True,
+         begin=10,
+         end=100)
+]
+
 runner = Runner(
     # the model used for training and validation.
     # Needs to meet specific interface requirements
@@ -84,7 +99,8 @@ runner = Runner(
     train_dataloader=train_dataloader,
     # optimize wrapper for optimization with additional features like
     # AMP, gradient accumulation, etc
-    optim_wrapper=dict(optimizer=dict(type=SGD, lr=0.001, momentum=0.9)),
+    optim_wrapper=dict(optimizer=dict(type=SGD, lr=0.001, momentum=0.9, weight_decay=0.0005)),
+    param_scheduler=param_scheduler,
     # training coins for specifying training epoch's, verification intervals, etc
     train_cfg=dict(by_epoch=True, max_epochs=20, val_interval=1),
     # validation dataloader also needs to meet the PyTorch data loader protocol
