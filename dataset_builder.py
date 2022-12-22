@@ -220,7 +220,7 @@ class Fit_Dataset(Dataset):
 
         if self.use_metadata:
             mtd = self.list_metadata[index]
-            return (torch.as_tensor(img, dtype=torch.float), torch.as_tensor(mtd, dtype=torch.float)), \
+            return [torch.as_tensor(img, dtype=torch.float), torch.as_tensor(mtd, dtype=torch.float)], \
                 torch.as_tensor(msk, dtype=torch.float)
 
         else:
@@ -256,7 +256,7 @@ class Predict_Dataset(Dataset):
 
         if self.use_metadata:
             mtd = self.list_metadata[index]
-            return (torch.as_tensor(img, dtype=torch.float), torch.as_tensor(mtd, dtype=torch.float)), \
+            return [torch.as_tensor(img, dtype=torch.float), torch.as_tensor(mtd, dtype=torch.float)], \
                 '/'.join(image_file.split('/')[-4:])
         else:
             return torch.as_tensor(img, dtype=torch.float), '/'.join(image_file.split('/')[-4:])

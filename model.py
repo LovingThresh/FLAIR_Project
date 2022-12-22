@@ -51,28 +51,28 @@ class SMP_Unet_meta(BaseModel):
                  ):
         super(SMP_Unet_meta, self).__init__()
 
-        self.seg_model = smp.create_model(arch="FPN", encoder_name="mit_b5", classes=n_classes,
+        self.seg_model = smp.create_model(arch="FPN", encoder_name="timm-regnety_160", classes=n_classes,
                                           in_channels=n_channels)
         self.use_metadata = use_metadata
         if use_metadata:
             self.enc = mtd_MLP()
 
     def forward(self, inputs, target, mode):
-        if isinstance(inputs, tuple):
-            inputs = inputs[0]
+        if isinstance(inputs, list):
+            input = inputs[0]
             met = inputs[1]
         else:
-            inputs = inputs
+            input = inputs
             met = None
         if self.use_metadata:
-            feats = self.seg_model.encoder(inputs)
+            feats = self.seg_model.encoder(input)
             x_enc = self.enc(met)
-            x_enc = x_enc.unsqueeze(1).unsqueeze(-1).repeat(1, 512, 1, 16)
+            x_enc = x_enc.unsqueeze(1).unsqueeze(-1).repeat(1, 3024, 1, 16)
             feats[-1] = torch.add(feats[-1], x_enc)
             output = self.seg_model.decoder(*feats)
             output = self.seg_model.segmentation_head(output)
         else:
-            output = self.seg_model(inputs)
+            output = self.seg_model(input)
 
         if mode == 'loss':
             return {'loss': F.cross_entropy(output, target)}

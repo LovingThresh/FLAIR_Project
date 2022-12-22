@@ -60,11 +60,11 @@ class MeanIoU_torch(BaseMetric):
                     )
 
 
-use_metadata = False
+use_metadata = True
 path_data = "/root/autodl-tmp/FLAIR_Project/flair_dataset/"
 path_metadata_file = "/root/autodl-tmp/FLAIR_Project/metadata/flair-one_metadata.json"
 dict_train, dict_val, dict_test = step_loading(path_data, path_metadata_file, use_metadata=use_metadata)
-dataModule = DataModule(dict_train, dict_val, dict_test, num_workers=4, batch_size=64, use_metadata=use_metadata,
+dataModule = DataModule(dict_train, dict_val, dict_test, num_workers=4, batch_size=16, use_metadata=use_metadata,
                         use_augmentations=train_pipeline)
 dataModule.setup(stage='fit')
 train_dataloader, val_dataloader, predict_dataloader = \
