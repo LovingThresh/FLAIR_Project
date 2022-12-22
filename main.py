@@ -61,10 +61,10 @@ class MeanIoU_torch(BaseMetric):
 
 
 use_metadata = False
-path_data = "/root/autodl-tmp/flair-one-starting-kit/toy_dataset_flair-one/"
-path_metadata_file = "/root/autodl-tmp/flair-one-starting-kit/metadata/flair-one_TOY_metadata.json"
+path_data = "/root/autodl-tmp/FLAIR_Project/flair_dataset/"
+path_metadata_file = "/root/autodl-tmp/FLAIR_Project/metadata/flair-one_metadata.json"
 dict_train, dict_val, dict_test = step_loading(path_data, path_metadata_file, use_metadata=use_metadata)
-dataModule = DataModule(dict_train, dict_val, dict_test, num_workers=1, batch_size=2, use_metadata=use_metadata,
+dataModule = DataModule(dict_train, dict_val, dict_test, num_workers=4, batch_size=64, use_metadata=use_metadata,
                         use_augmentations=train_pipeline)
 dataModule.setup(stage='fit')
 train_dataloader, val_dataloader, predict_dataloader = \
@@ -97,16 +97,17 @@ runner = Runner(
     train_dataloader=train_dataloader,
     # optimize wrapper for optimization with additional features like
     # AMP, gradient accumulation, etc
-    optim_wrapper=dict(optimizer=dict(type=SGD, lr=0.001, momentum=0.9, weight_decay=0.0005)),
+    optim_wrapper=dict(type='AmpOptimWrapper', optimizer=dict(type=SGD, lr=0.001, momentum=0.9, weight_decay=0.0005)),
     param_scheduler=param_scheduler,
     # training coins for specifying training epoch's, verification intervals, etc
-    train_cfg=dict(by_epoch=True, max_epochs=20, val_interval=1),
+    train_cfg=dict(by_epoch=True, max_epochs=100, val_interval=1),
     # validation dataloader also needs to meet the PyTorch data loader protocol
     val_dataloader=val_dataloader,
     # validation configs for specifying additional parameters required for validation
     val_cfg=dict(),
     # validation evaluator. The default one is used here
     val_evaluator=dict(type=MeanIoU_torch),
+    # launcher='pytorch',
     visualizer=dict(type='Visualizer', vis_backends=[dict(type='TensorboardVisBackend', save_dir='temp_dir'),
                                                      dict(type='WandbVisBackend', init_kwargs=
                                                      dict(project='FLAIR_Project', notes=None,

@@ -64,7 +64,7 @@ classes = {
     19: 'other'}
 
 
-def load_data(path_data, path_metadata, val_percent=0.8, use_metadata=True):
+def load_data(path_data, path_metadata, val_percent=0.95, use_metadata=True):
     def _gather_data(path_folders, path_metadata: str, use_metadata: bool, test_set: bool) -> dict:
 
         #### return data paths
